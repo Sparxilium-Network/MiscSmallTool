@@ -10,7 +10,7 @@ https://github.com/Sparxilium-Network/MiscSmallTool
 
 | Name | What is this | 這是甚麼 | License / 授權 |
 | --- | --- | --- | --- |
-| [neo-setup.sh](./neo-setup.sh) | Interactive OpenSK setup and flashing helper. It can clone OpenSK, prepare the local toolchain and crypto data, patch `nrfdfu`, configure AAGUID/attestation, select firmware features, and flash supported targets. | OpenSK 互動式安裝與燒錄輔助腳本，可自動 clone OpenSK、準備工具鏈與 crypto data、修補 `nrfdfu`、設定 AAGUID／attestation、選擇韌體功能並燒錄支援的裝置。 | GNU AGPLv3 |
+| [opensk-setup.sh](./opensk-neo/opensk-setup.sh) | Interactive OpenSK setup and flashing helper. It can clone OpenSK, prepare the local toolchain and crypto data, patch `nrfdfu`, configure AAGUID/attestation, select firmware features, and flash supported targets. See [its README](./opensk-neo/README.md) for setup and usage details. | OpenSK 互動式安裝與燒錄輔助腳本，可自動 clone OpenSK、準備工具鏈與 crypto data、修補 `nrfdfu`、設定 AAGUID／attestation、選擇韌體功能並燒錄支援的裝置。詳細說明請見[專屬 README](./opensk-neo/README.md)。 | GNU AGPLv3 |
 
 ## Notes
 

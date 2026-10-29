@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OpenSK neo-setup（獨立版）：自動 git clone、修補 nrfdfu、勾選選單設定並燒錄。
+# OpenSK OpenSK Setup（獨立版）：自動 git clone、修補 nrfdfu、勾選選單設定並燒錄。
 #
 # 所有檔案都放在本腳本所在目錄：
 #   ./opensk/   OpenSK（develop 分支）與其 submodule、編譯產物、crypto_data 金鑰
@@ -380,11 +380,11 @@ feature_reasons_for() {
 # ---------- 主流程 ----------
 
 main() {
-  [ -t 0 ] && [ -t 1 ] || die "neo-setup 需要在互動式終端機中執行。"
+  [ -t 0 ] && [ -t 1 ] || die "OpenSK Setup 需要在互動式終端機中執行。"
   trap restore_cursor EXIT
 
   local i TARGET="" SELECTED=() FEATURES
-  RADIO=1 checklist "neo-setup 1/3：選擇燒錄目標" TARGET_LABELS TARGET_STATES TARGET_REASONS
+  RADIO=1 checklist "OpenSK Setup 1/3：選擇燒錄目標" TARGET_LABELS TARGET_STATES TARGET_REASONS
   for i in "${!TARGETS[@]}"; do
     [ "${TARGET_STATES[i]}" = 1 ] && TARGET="${TARGETS[i]}"
   done
@@ -398,10 +398,10 @@ main() {
     OPTION_REASONS[OPT_RECLONE]="尚未 clone"
     OPTION_STATES[OPT_RECLONE]=0
   fi
-  checklist "neo-setup 2/3：流程選項（目標：$TARGET）" OPTION_LABELS OPTION_STATES OPTION_REASONS
+  checklist "OpenSK Setup 2/3：流程選項（目標：$TARGET）" OPTION_LABELS OPTION_STATES OPTION_REASONS
 
   feature_reasons_for "$TARGET"
-  checklist "neo-setup 3/3：韌體功能（目標：$TARGET）" FEATURE_LABELS FEATURE_STATES FEATURE_REASONS
+  checklist "OpenSK Setup 3/3：韌體功能（目標：$TARGET）" FEATURE_LABELS FEATURE_STATES FEATURE_REASONS
 
   for i in "${!FEATURES_ALL[@]}"; do
     [ "${FEATURE_STATES[i]}" = 1 ] && SELECTED+=("${FEATURES_ALL[i]}")
