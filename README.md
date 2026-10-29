@@ -6,11 +6,11 @@ A collection of small scripts, utilities, and miscellaneous tools.
 Repository:  
 https://github.com/Sparxilium-Network/MiscSmallTool
 
-## Tools / Scripts Example
+## Tools / Scripts
 
 | Name | What is this | 這是甚麼 | License / 授權 |
 | --- | --- | --- | --- |
-| EX NAME | Example description of the script or tool. | 腳本或工具的範例說明。 | MIT |
+| [neo-setup.sh](./neo-setup.sh) | Interactive OpenSK setup and flashing helper. It can clone OpenSK, prepare the local toolchain and crypto data, patch `nrfdfu`, configure AAGUID/attestation, select firmware features, and flash supported targets. | OpenSK 互動式安裝與燒錄輔助腳本，可自動 clone OpenSK、準備工具鏈與 crypto data、修補 `nrfdfu`、設定 AAGUID／attestation、選擇韌體功能並燒錄支援的裝置。 | GNU AGPLv3 |
 
 ## Notes
 
@@ -33,9 +33,3 @@ Please refer to the **License / 授權** column above and any license file inclu
 
 每個腳本或工具可能採用不同的授權條款。  
 請參考上方的 **License / 授權** 欄位，以及各腳本目錄內附帶的授權文件。
-
-## Tools / Scripts
-
-| Name | What is this | 這是甚麼 | License / 授權 |
-| --- | --- | --- | --- |
-| EX NAME | Example description of the script or tool. | 腳本或工具的範例說明。 | MIT |
