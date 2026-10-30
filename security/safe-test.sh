@@ -15,11 +15,49 @@
 # 已知風險（未處理）：匯出報告使用目前目錄下可預測的檔名，會跟隨同名符號連結並
 # 截斷目標，檔案權限取決於 umask。請勿在他人可寫入的目錄以 root 匯出。
 #
+# 執行來源：以 sudo 執行時，applet/ 底下的腳本與 lib.sh 也會以 root 身分執行。
+# 請確認來源正確，且這些檔案與目錄只有 root 能修改。以 root 執行時若發現不是
+# root 擁有或他人可寫入的檔案，會先警告並要求確認。
+#
 # 僅能用於你有權限稽核的網路與主機。
 #
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 APPLET_DIR="$SCRIPT_DIR/applet"
+
+# 以 root 執行時，檢查入口與 applet 是否可能被非 root 竄改
+# 這些腳本都會以 root 身分執行，非 root 擁有或群組 / 他人可寫入就要求確認
+# 必須在 source lib.sh 之前執行，所以不使用 lib.sh 的顏色變數
+check_sources() {
+    [[ $EUID -eq 0 ]] || return 0
+    local -a unsafe=()
+    local answer
+    mapfile -t unsafe < <(
+        find "$SCRIPT_DIR" "$APPLET_DIR" -maxdepth 0 \( ! -user 0 -o -perm /022 \) 2>/dev/null
+        find "$SCRIPT_DIR/safe-test.sh" "$APPLET_DIR" -maxdepth 1 -type f \
+            \( ! -user 0 -o -perm /022 \) 2>/dev/null
+    )
+    [[ ${#unsafe[@]} -eq 0 ]] && return 0
+
+    {
+        echo -e "\033[0;31m[風險] 以 root 執行時，applet/ 底下的腳本也會以 root 身分執行。\033[0m"
+        echo "以下檔案或目錄不是 root 擁有，或群組 / 他人可寫入；"
+        echo "能修改它們的人，就能在你下次以 sudo 執行時取得 root："
+        for f in "${unsafe[@]}"; do
+            printf '  - %s  (%s)\n' "$f" "$(stat -c '%U:%G %A' "$f" 2>/dev/null)"
+        done
+        echo "請確認來源正確，建議改為 root 擁有且只有 root 可寫入，例如："
+        echo "  sudo chown -R root:root \"$SCRIPT_DIR\" && sudo chmod -R go-w \"$SCRIPT_DIR\""
+    } >/dev/tty
+    read -rp "確認來源無誤、仍要繼續請輸入 yes：" answer </dev/tty >/dev/tty 2>&1
+    if [[ "$answer" != yes ]]; then
+        echo -e "\033[1;33m操作已取消。\033[0m" >/dev/tty
+        exit 1
+    fi
+}
+
+check_sources
+
 source "$APPLET_DIR/lib.sh"
 
 # 子網總 IP 數超過此值，或任一子網大於 /16 時，要求輸入 yes 確認
@@ -178,6 +216,7 @@ if [[ ! -t 1 ]] || ! { : </dev/tty; } 2>/dev/null; then
     echo -e "${RED}[錯誤] 勾選選單需要互動式終端機。${NC}"
     exit 1
 fi
+
 
 checklist "安全檢查項目" CHECK_LABELS CHECK_DEFAULTS CHECK_HINTS
 

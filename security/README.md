@@ -14,6 +14,8 @@
 sudo ./safe-test.sh
 ```
 
+以 sudo 執行前請先看 [風險：以 sudo 執行時的腳本來源](#風險以-sudo-執行時的腳本來源)。
+
 選單操作：↑/↓ 移動，空白鍵勾選或取消，`a` 全選／全不選，Enter 執行，`q` 離開。
 
 ```text
@@ -61,6 +63,19 @@ sudo bash applet/sshd-config.sh
 - **SSH 密碼登入**：以測試帳號（預設 `audit_user`，可用 `SAFE_TEST_USER` 更換）連線，從伺服器回應的驗證方式判斷，不會真的輸入密碼。`Match User` / `Match Group` 可能讓其他帳號得到不同結果。
 - **主機金鑰**：會比對你的 `known_hosts`（以 sudo 執行時讀原使用者的檔案），比對用的是暫存副本，不會修改原檔。金鑰不符的主機結果不採信，可能有中間人攻擊；不在 `known_hosts` 裡的主機會標示為「未驗證」。
 - **sshd 設定**：只檢查全域設定。`Match` 區塊對特定使用者或來源的覆寫，請用 `sshd -T -C user=...,host=...,addr=...` 個別查詢。
+
+## 風險：以 sudo 執行時的腳本來源
+
+以 sudo 執行 `safe-test.sh` 時，`applet/` 底下的所有腳本（包含 `lib.sh`）也會以 root 身分執行。能修改這些檔案的人，就能在你下次執行時取得 root。
+
+- 只使用來源正確、內容檢查過的版本，例如從本 repository clone 後先核對 `git log` / `git diff`。
+- 執行前把整個目錄改為 root 擁有，且只有 root 可寫入：
+
+  ```sh
+  sudo chown -R root:root /path/to/security && sudo chmod -R go-w /path/to/security
+  ```
+
+以 root 執行時，腳本會在載入任何 applet（含 `lib.sh`）之前，檢查入口、`applet/` 目錄與其中的檔案。只要有不是 root 擁有、或群組／他人可寫入的項目，就會列出來並要求輸入 `yes` 才繼續。這個檢查無法保護 `safe-test.sh` 本身已被竄改的情況，也不檢查上層目錄，所以仍要自行確認來源。
 
 ## 已知風險：匯出報告
 
