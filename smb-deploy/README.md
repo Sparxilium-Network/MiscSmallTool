@@ -2,8 +2,10 @@
 
 授權：MIT，詳見 [LICENSE](./LICENSE)。
 
-`deploy-samba-home.sh` 會在 Debian / Ubuntu 主機上安裝 Samba，把一位 Linux 使用者的整個 Home 目錄分享成 SMB share，並套用偏嚴格的 SMB 安全設定。適合在區網內的 VM 或開發機上，讓 Windows 直接存取 Linux Home。
+`deploy-samba-home-selective-v3.sh` 會在 Debian / Ubuntu 主機上安裝 Samba，把一位 Linux 使用者的整個 Home 目錄分享成 SMB share，並套用偏嚴格的 SMB 安全設定。
 
+> **警告：此腳本只建議用於 Codex / Claude 等 AI agent 的沙箱環境**，目的是讓使用者可以直接從 Windows 讀取、操作 agent 沙箱內的檔案。請勿用在一般工作機、正式環境或存有重要資料與金鑰的主機上。
+>
 > 不要把 TCP/445 直接 Port Forward 到公網。
 
 ## 使用方式
@@ -11,7 +13,7 @@
 在 Linux 的互動式終端機中，以要分享 Home 的那位使用者身分透過 sudo 執行：
 
 ```sh
-sudo bash deploy-samba-home.sh
+sudo bash deploy-samba-home-selective-v3.sh
 ```
 
 - 分享對象預設為 `SUDO_USER`；若取不到（或是 root），會改用 `logname`，再不行就要求輸入使用者名稱。
@@ -48,14 +50,14 @@ sudo bash deploy-samba-home.sh
 可以用環境變數指定允許連線的子網，取代自動偵測：
 
 ```sh
-sudo SMB_ALLOWED_CIDR=192.168.1.0/24 bash deploy-samba-home.sh
+sudo SMB_ALLOWED_CIDR=192.168.1.0/24 bash deploy-samba-home-selective-v3.sh
 ```
 
 ## 備份與還原
 
 每次執行都會先把 `/etc/samba/smb.conf` 備份成 `/etc/samba/smb.conf.bak.<時間戳記>`。寫入後會用 `testparm` 驗證，驗證失敗時會自動還原備份並結束。
 
-腳本寫入 `[global]` 的設定區塊會以 `# Managed by deploy-samba-home-selective-v3.sh` 標記。重新執行時會依這個標記與設定名稱移除舊的區塊再寫入新的，所以重複執行不會累積重複設定。
+腳本寫入 `[global]` 的設定區塊會以 `# Managed by deploy-samba-home-selective-v3.sh` 標記。重新執行時會依這個標記與設定名稱移除舊的區塊再寫入新的，所以重複執行不會累積重複設定。這個標記名稱與腳本檔名相同，請勿更改，否則已部署的主機上舊的標記行不會被清除。
 
 ## 需求
 
