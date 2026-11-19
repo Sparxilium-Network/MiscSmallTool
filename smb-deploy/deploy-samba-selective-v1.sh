@@ -87,8 +87,10 @@ if [[ -n "${TARGET_HOME_REAL}" ]]; then
 fi
 
 # 以該使用者身分檢查存取權限（群組、ACL 都會被核心納入判斷）。
+# 使用 bash 內建的 [[ ]]，不用外部 /usr/bin/test：Ubuntu 25.10 起的 uutils
+# coreutils 版 test -w 會忽略 POSIX ACL，造成有 ACL 寫入權限時誤判。
 PATH_ACCESS_OK=1
-if ! runuser -u "${TARGET_USER}" -- test -r "${SHARE_PATH}" -a -w "${SHARE_PATH}" -a -x "${SHARE_PATH}"; then
+if ! runuser -u "${TARGET_USER}" -- bash -c '[[ -r "$1" && -w "$1" && -x "$1" ]]' _ "${SHARE_PATH}"; then
     PATH_ACCESS_OK=0
 fi
 
